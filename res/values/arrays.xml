@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string-array name="intervalentries">
+        <item>No repeat</item>        
+        <item>30 seconds</item>
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>        
+        <item>5 minutes</item>
+        <item>10 minutes</item>
+        <item>30 minutes</item>
+    </string-array>
+	
+	<string-array name="intervalentryvalues">
+        <item>0</item>        
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>180000</item>
+		<item>300000</item>
+		<item>600000</item>
+		<item>1800000</item>
+    </string-array>    
+    
+    <string-array name="repeatsentries">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>        
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+    
+    <string-array name="repeatsentryvalues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>        
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+
+	<string-array name="vibrationmodeentries">
+        <item>Off</item>
+        <item>System default</item>
+        <item>Extra short</item>
+        <item>Short</item>
+        <item>Medium</item>
+        <item>Long</item>
+        <item>Extra long</item>        
+    </string-array>
+	
+	<string-array name="vibrationmodeentryvalues">
+        <item>off</item>
+        <item>default</item>
+        <item>shorter</item>
+        <item>short</item>
+        <item>medium</item>
+        <item>long</item>
+        <item>extra</item>
+    </string-array>
+    
+    <array name="niconentries">
+        <item>Android 2.0</item>
+        <item>Android 1.5</item>
+        <item>Envelope (aqua)</item>
+        <item>Envelope (blue)</item>
+        <item>Envelope (green)</item>
+        <item>Envelope (magenta)</item>
+        <item>Envelope (orange)</item>
+        <item>Envelope (red)</item>
+        <item>Envelope (yellow)</item>
+        <item>\@ (aqua)</item>
+        <item>\@ (blue)</item>
+        <item>\@ (green)</item>
+        <item>\@ (magenta)</item>
+        <item>\@ (orange)</item>
+        <item>\@ (red)</item>
+        <item>\@ (yellow)</item>
+        <item>Gmail Notifier</item>
+    </array>
+	
+	<string-array name="niconentryvalues">
+        <item>nicon_20</item>
+        <item>nicon_15</item>
+        <item>nicon_aqua</item>
+        <item>nicon_blue</item>
+        <item>nicon_green</item>
+        <item>nicon_magenta</item>
+        <item>nicon_orange</item>        
+        <item>nicon_red</item>
+        <item>nicon_yellow</item>
+        <item>nicon_15aqua</item>
+        <item>nicon_15blue</item>
+        <item>nicon_15green</item>
+        <item>nicon_15magenta</item>
+        <item>nicon_15orange</item>
+        <item>nicon_15red</item>
+        <item>nicon_15yellow</item>
+        <item>nicon_this</item>
+    </string-array>
+    
+	<string-array name="ledmodeentries">
+        <item>Off</item>
+        <item>Constantly on</item>
+        <item>Blink</item>                
+    </string-array>
+	
+	<string-array name="ledmodeentryvalues">
+        <item>off</item>
+        <item>on</item>
+        <item>blink</item>
+    </string-array>
+    
+    <string-array name="ledcolorentries">
+        <item>Blue</item>
+        <item>Cyan</item>
+        <item>Green</item>
+        <item>Magenta</item>
+        <item>Red</item>        
+        <item>Yellow</item>
+    </string-array>
+	
+	<string-array name="ledcolorentryvalues">
+        <item>blue</item>
+        <item>cyan</item>
+        <item>green</item>
+        <item>magenta</item>
+        <item>red</item>
+        <item>yellow</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    
+	<LinearLayout android:id="@+id/LinearLayout" android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="fill_parent">
+		<WebView android:id="@+id/browser"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		/>
+	</LinearLayout>
+	<TableRow android:id="@+id/TableRowChk" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center">
+        <CheckBox android:id="@+id/enableCheckBox" android:text="@string/enabled" />         
+    </TableRow>
+	<TableRow android:id="@+id/TableRowButtons" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center">
+		<Button android:text="@string/prefs" android:id="@+id/prefsButton" android:layout_height="wrap_content" android:minWidth="95dip"/>
+		<Button android:text="@string/test" android:id="@+id/testButton" android:layout_height="wrap_content" android:minWidth="95dip"/>
+		<Button android:text="@string/donate" android:id="@+id/donateButton" android:layout_height="wrap_content" android:minWidth="95dip"/>
+	</TableRow>
+	
+</LinearLayout>
