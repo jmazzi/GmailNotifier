@@ -253,7 +253,12 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
             stop.set(Calendar.MINUTE, prefs.getInt("schedulestopm", DEFAULT_SCHEDULE_STOP_MINUTE));
             // If stop occurs before start if should be the next day
             if (stop.before(start)) {
-                stop.add(Calendar.HOUR_OF_DAY, 24);
+                // Before or after midnight?
+                if (start.before(now)) {
+                    stop.add(Calendar.HOUR_OF_DAY, 24);
+                } else {
+                    start.add(Calendar.HOUR_OF_DAY, -24);
+                }
             }
             if (now.after(start) && now.before(stop)) {
                 // We are in the scheduled disable period
