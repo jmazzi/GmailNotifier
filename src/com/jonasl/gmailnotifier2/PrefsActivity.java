@@ -66,7 +66,7 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
 
         Intent intent = this.getIntent();
         if (intent.hasExtra("account")) {
-            mAccount = intent.getStringExtra("account");
+            mAccount = intent.getStringExtra("account").toLowerCase();
             upgradePreferences(getSharedPreferences(mAccount, 0));
             setTitle(mAccount);
         } else {

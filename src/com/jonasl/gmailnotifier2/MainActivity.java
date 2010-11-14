@@ -97,34 +97,14 @@ public class MainActivity extends Activity implements OnClickListener {
         // against 1.5 SDK, we use reflection to get the accounts from it.
         // If AccountManager isn't found, we use the embedded framework.jar
 
-        this.mAccounts = null;
         this.mWaitingForAccounts = false;
+        this.mAccounts = getAccountsFromAccountManager(this);
 
-        try {
-            Class<?> cAccMgr = Class.forName("android.accounts.AccountManager");
-            Class<?> cAcc = Class.forName("android.accounts.Account");
-            Method mGet = cAccMgr.getMethod("get", new Class[] {
-                Context.class
-            });
-            Object accmgr = mGet.invoke(null, this);
-            Method mGetAccountsByType = cAccMgr.getMethod("getAccountsByType", new Class[] {
-                String.class
-            });
-            Object[] accs = (Object[]) mGetAccountsByType.invoke(accmgr, new Object[] {
-                "com.google"
-            });
-            mAccounts = new String[accs.length];
-            for (int i = 0; i < mAccounts.length; i++) {
-                String name = (String) cAcc.getField("name").get(accs[i]);
-                mAccounts[i] = name;
-            }
-        } catch (ClassNotFoundException ex) {
-            // Ignore. We find the account below by other means
-        } catch (Exception ex) {
-            Log.d(GmailReceiver.TAG, ex.toString());
-        }
-
-        if (mAccounts == null) {
+        if (mAccounts != null) {
+            // Save known accounts for use after boot
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putString("accounts",
+                    joinStrings(mAccounts, ";")).commit();
+        } else {
             // AccountManager not found or failed. Try other method.
             prefsButton.setEnabled(false); // Disable while waiting for result.
             this.mWaitingForAccounts = true;
@@ -203,6 +183,9 @@ public class MainActivity extends Activity implements OnClickListener {
             // Accounts loaded callback from framework.jar
             mAccounts = data.getExtras().getStringArray("accounts");
             mWaitingForAccounts = false;
+            // Save known accounts for use after boot
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putString("accounts",
+                    joinStrings(mAccounts, ";")).commit();
             Button prefsButton = (Button) findViewById(R.id.prefsButton);
             prefsButton.setEnabled(true);
         }
@@ -263,4 +246,53 @@ public class MainActivity extends Activity implements OnClickListener {
         sStarted = false;
         GmailReceiver.exitAsNeeded();
     }
+
+    static String[] getAccountsFromAccountManager(Context context) {
+        String[] result = null;
+        try {
+            Class<?> cAccMgr = Class.forName("android.accounts.AccountManager");
+            Class<?> cAcc = Class.forName("android.accounts.Account");
+            Method mGet = cAccMgr.getMethod("get", new Class[] {
+                Context.class
+            });
+            Object accmgr = mGet.invoke(null, context);
+            Method mGetAccountsByType = cAccMgr.getMethod("getAccountsByType", new Class[] {
+                String.class
+            });
+            Object[] accs = (Object[]) mGetAccountsByType.invoke(accmgr, new Object[] {
+                "com.google"
+            });
+
+            result = new String[accs.length];
+            for (int i = 0; i < result.length; i++) {
+                String name = (String) cAcc.getField("name").get(accs[i]);
+                result[i] = name;
+            }
+
+            return result;
+        } catch (ClassNotFoundException ex) {
+            // Ignore. We find the account below by other means
+        } catch (Exception ex) {
+            Log.d(GmailReceiver.TAG, ex.toString());
+        }
+
+        return result;
+    }
+
+    static String joinStrings(String[] s, String delimiter) {
+        if (s == null || s.length == 0) {
+            return "";
+        }
+        if (s.length == 1) {
+            return s[0];
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < s.length - 1; i++) {
+            builder.append(s[i]);
+            builder.append(delimiter);
+        }
+        builder.append(s[s.length - 1]);
+        return builder.toString();
+    }
+
 }

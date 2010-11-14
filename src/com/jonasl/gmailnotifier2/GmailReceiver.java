@@ -73,7 +73,31 @@ public class GmailReceiver extends BroadcastReceiver {
 
         String action = intent.getAction();
 
-        if (Intent.ACTION_PROVIDER_CHANGED.equals(action)) {
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+            // Reset "unreadcount" for each account. If accounts aren't in
+            // default shared prefs, try reading them from AccountManager.
+            // Reading from AccountManager isn't possible pre 2.0 so those users
+            // must have launched MainActivity at least once since updating so
+            // "accounts" gets populated. Who doesn't use > 2.0 these days?
+            String[] accounts = null;
+            String joinedAccounts = PreferenceManager.getDefaultSharedPreferences(context)
+                    .getString("accounts", null);
+            if (joinedAccounts != null) {
+                accounts = joinedAccounts.split(";");
+            } else {
+                accounts = MainActivity.getAccountsFromAccountManager(context);
+            }
+
+            if (accounts != null) {
+                for (String account : accounts) {
+                    context.getSharedPreferences(account.toLowerCase(), 0).edit().putInt(
+                            "unreadcount", 0).commit();
+                    Log.d(TAG, "unreadcount set to 0 for " + account);
+                }
+            } else {
+                Log.w(TAG, "No accounts configured. Notifications might be off. Run the app once.");
+            }
+        } else if (Intent.ACTION_PROVIDER_CHANGED.equals(action)) {
             // Unread count has changed
             String account = intent.getStringExtra("account");
             String tagLabel = intent.getStringExtra("tagLabel");
@@ -95,6 +119,8 @@ public class GmailReceiver extends BroadcastReceiver {
                 Log.d(TAG, "Gmail clearing notification for " + account);
                 clearNotification(context, account);
             }
+            context.getSharedPreferences(account.toLowerCase(), 0).edit().putInt("unreadcount",
+                    unreadCount).commit();
         } else if (action.equals("REPEAT")) {
             // AlarmManager timer has ticked
             Notification n = intent.getParcelableExtra("notification");
@@ -139,8 +165,15 @@ public class GmailReceiver extends BroadcastReceiver {
             }
 
             // Load preferences from file, falling back on hard coded defaults
-            SharedPreferences prefs = context.getSharedPreferences(account, 0);
+            SharedPreferences prefs = context.getSharedPreferences(account.toLowerCase(), 0);
             PrefsActivity.upgradePreferences(prefs);
+
+            int lastUnreadCount = prefs.getInt("unreadcount", 0);
+            if (unreadCount < lastUnreadCount) {
+                // Ignore. Typically the user read a message with another Gmail
+                // client. Should be safe...
+                return true;
+            }
             boolean visible = prefs.getBoolean("visible", true);
             String ledMode = prefs.getString("ledmode", "blink");
             String ledColor = prefs.getString("ledcolor", "green");
@@ -153,7 +186,7 @@ public class GmailReceiver extends BroadcastReceiver {
             int interval = Integer.valueOf(prefs.getString("interval", "0"));
             int repeats = Integer.valueOf(prefs.getString("repeats", "10"));
             int schedule = PrefsActivity.getScheduledProperties(prefs);
-            // Apply scheduled properites
+            // Apply scheduled properties
             if (((schedule & PrefsActivity.DISABLE_LED) != 0)) {
                 ledMode = "none";
             }
@@ -309,7 +342,7 @@ public class GmailReceiver extends BroadcastReceiver {
             }
         }
 
-        SharedPreferences prefs = context.getSharedPreferences(account, 0);
+        SharedPreferences prefs = context.getSharedPreferences(account.toLowerCase(), 0);
         boolean vibrateOnCall = prefs.getBoolean("vibrateoncall", true);
         if (!vibrateOnCall) {
             // Try to detect phone state
@@ -524,11 +557,14 @@ public class GmailReceiver extends BroadcastReceiver {
             if (sHandler == null) {
                 sHandler = new Handler();
             }
-            sHandler.postDelayed(new Runnable() {
-                public void run() {
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }, 2000);
+            sHandler.removeCallbacks(doKill);
+            sHandler.postDelayed(doKill, 2000);
         }
     }
+
+    private static Runnable doKill = new Runnable() {
+        public void run() {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+    };
 }
