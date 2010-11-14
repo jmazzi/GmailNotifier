@@ -169,9 +169,10 @@ public class GmailReceiver extends BroadcastReceiver {
             PrefsActivity.upgradePreferences(prefs);
 
             int lastUnreadCount = prefs.getInt("unreadcount", 0);
-            if (unreadCount < lastUnreadCount) {
+            if (unreadCount != -1 && unreadCount < lastUnreadCount) {
                 // Ignore. Typically the user read a message with another Gmail
                 // client. Should be safe...
+                Log.d(TAG, "Ignoring. unreadCount " + unreadCount + " lastUnreadCount " + lastUnreadCount);
                 return true;
             }
             boolean visible = prefs.getBoolean("visible", true);
@@ -562,8 +563,8 @@ public class GmailReceiver extends BroadcastReceiver {
         }
     }
 
-    private static Runnable doKill = new Runnable() {
-        public void run() {
+    private static Runnable doKill = new Runnable(){
+        public void run(){
             android.os.Process.killProcess(android.os.Process.myPid());
         }
     };
