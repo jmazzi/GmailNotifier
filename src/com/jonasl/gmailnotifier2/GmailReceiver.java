@@ -98,29 +98,39 @@ public class GmailReceiver extends BroadcastReceiver {
                 Log.w(TAG, "No accounts configured. Notifications might be off. Run the app once.");
             }
         } else if (Intent.ACTION_PROVIDER_CHANGED.equals(action)) {
+            Log.d(TAG, "ACTION_PROVIDER_CHANGED " + intent.getDataString());
             // Unread count has changed
             String account = intent.getStringExtra("account");
             String tagLabel = intent.getStringExtra("tagLabel");
             int unreadCount = intent.getIntExtra("count", 0);
+            SharedPreferences prefs = context.getSharedPreferences(account.toLowerCase(), 0);
+            boolean isPriority = "content://gmail-ls/unread/^iim".equals(intent.getDataString());
+            boolean usePriority = prefs.getBoolean("priority", false);
+            // If user has uninstalled Gmail update we force priority setting to
+            // false. Otherwise no notifications at all!
+            usePriority &= PrefsActivity.supportsPriorityInbox(context);
+            if ((isPriority && usePriority) || (!isPriority && !usePriority)) {
+                if (unreadCount > 0) {
+                    // unreadCount > 0 means new mail
+                    Log.d(TAG, "New email for " + account + " unreadCount:" + unreadCount);
 
-            if (unreadCount > 0) {
-                // unreadCount > 0 means new mail
-                Log.d(TAG, "New email for " + account + " unreadCount:" + unreadCount);
+                    // These properties was found by analyzing Gmail app
+                    intent.setClassName("com.google.android.gm",
+                            "com.google.android.gm.ConversationListActivity");
+                    intent.addCategory(account);
+                    intent.putExtra("account-shortcut", account);
 
-                // These properties was found by analyzing Gmail app
-                intent.setClassName("com.google.android.gm",
-                        "com.google.android.gm.ConversationListActivity");
-                intent.addCategory(account);
-                intent.putExtra("account-shortcut", account);
-
-                createNotification(context, account, unreadCount, intent, tagLabel);
+                    createNotification(context, account, unreadCount, intent, tagLabel);
+                } else {
+                    // unreadCount == 0 means clear notification
+                    Log.d(TAG, "Gmail clearing notification for " + account);
+                    clearNotification(context, account);
+                }
+                prefs.edit().putInt("unreadcount", unreadCount).commit();
             } else {
-                // unreadCount == 0 means clear notification
-                Log.d(TAG, "Gmail clearing notification for " + account);
-                clearNotification(context, account);
+                Log.d(TAG, "Skipping. isPriority " + isPriority + " usePriority " + usePriority);
             }
-            context.getSharedPreferences(account.toLowerCase(), 0).edit().putInt("unreadcount",
-                    unreadCount).commit();
+
         } else if (action.equals("REPEAT")) {
             // AlarmManager timer has ticked
             Notification n = intent.getParcelableExtra("notification");
@@ -172,7 +182,8 @@ public class GmailReceiver extends BroadcastReceiver {
             if (unreadCount != -1 && unreadCount < lastUnreadCount) {
                 // Ignore. Typically the user read a message with another Gmail
                 // client. Should be safe...
-                Log.d(TAG, "Ignoring. unreadCount " + unreadCount + " lastUnreadCount " + lastUnreadCount);
+                Log.d(TAG, "Ignoring. unreadCount " + unreadCount + " lastUnreadCount "
+                        + lastUnreadCount);
                 return true;
             }
             boolean visible = prefs.getBoolean("visible", true);
@@ -563,8 +574,8 @@ public class GmailReceiver extends BroadcastReceiver {
         }
     }
 
-    private static Runnable doKill = new Runnable(){
-        public void run(){
+    private static Runnable doKill = new Runnable() {
+        public void run() {
             android.os.Process.killProcess(android.os.Process.myPid());
         }
     };

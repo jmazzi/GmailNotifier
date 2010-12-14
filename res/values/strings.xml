@@ -17,9 +17,12 @@
 	<string name="donate">Donate</string>
 	<string name="enabled">Notifications enabled</string>
 	<string name="prefs_title">Settings</string>
+	<string name="cat_priority">Priority Inbox</string>
 	<string name="cat_invisible">Invisible properties</string>
 	<string name="cat_visible">Visible properties</string>
 	<string name="cat_schedule">Scheduling</string>
+	<string name="priority">Use Priority Inbox</string>
+	<string name="priority_summary">Enable to notify only for messages in your Priority Inbox</string>
 	<string name="visible">Visible notifications</string>
 	<string name="visible_summary">Replaces Gmail notifications in status bar</string>
 	<string name="nicon">Notification icon</string>

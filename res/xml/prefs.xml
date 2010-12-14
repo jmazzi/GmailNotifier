@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">  
+    <PreferenceCategory android:title="@string/cat_priority"
+                        android:key="cat_priority">
+        <CheckBoxPreference
+            android:title="@string/priority"
+            android:key="priority"
+            android:summary="@string/priority_summary"
+            android:defaultValue="false"
+            />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/cat_invisible">
         <RingtonePreference
             android:title="@string/ringtone"

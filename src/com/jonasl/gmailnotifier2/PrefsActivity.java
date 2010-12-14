@@ -24,6 +24,7 @@ import com.jonasl.gmailnotifier2.R;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -84,6 +85,10 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
         ps = (PreferenceScreen) findPreference("schedulestop");
         ps.setOnPreferenceClickListener(this);
         updateScheduleSummaries();
+
+        if (!supportsPriorityInbox(this)) {
+            getPreferenceScreen().removePreference(findPreference("cat_priority"));
+        }
     }
 
     @Override
@@ -97,6 +102,9 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
             showDialog(0);
         } else if (preference.getKey().equals("schedulestop")) {
             showDialog(1);
+        } else if (preference.getKey().equals("priority")) {
+            // Reset unread count when switching mailboxes. They might differ.
+            getPreferenceManager().getSharedPreferences().edit().putInt("unreadcount", 0).commit();
         }
         return true;
     }
@@ -274,5 +282,15 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
             }
         }
         return res;
+    }
+
+    public static boolean supportsPriorityInbox(Context context) {
+        int version = 0;
+        try {
+            version = context.getPackageManager().getPackageInfo("com.google.android.gm", 0).versionCode;
+        } catch (Exception e) {
+            // Ignore
+        }
+        return version >= 156;
     }
 }
