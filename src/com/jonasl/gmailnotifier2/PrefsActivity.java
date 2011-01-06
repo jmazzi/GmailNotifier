@@ -31,6 +31,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.text.format.DateFormat;
@@ -38,6 +39,8 @@ import android.util.Log;
 import android.widget.TimePicker;
 
 public class PrefsActivity extends PreferenceActivity implements OnPreferenceClickListener {
+    final static String TEST_ACCOUNT = "test@gmail.com";
+
     final static int VERSION = 2;
 
     final static int DISABLE_RINGTONE = 1;
@@ -70,8 +73,12 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
             mAccount = intent.getStringExtra("account").toLowerCase();
             upgradePreferences(getSharedPreferences(mAccount, 0));
             setTitle(mAccount);
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("hasaccount",
+                    true).commit();
         } else {
-            mAccount = "test@gmail.com";
+            mAccount = TEST_ACCOUNT;
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("hasaccount",
+                    false).commit();
         }
 
         getPreferenceManager().setSharedPreferencesName(mAccount);
@@ -88,6 +95,14 @@ public class PrefsActivity extends PreferenceActivity implements OnPreferenceCli
 
         if (!supportsPriorityInbox(this)) {
             getPreferenceScreen().removePreference(findPreference("cat_priority"));
+        }
+    }
+
+    public static SharedPreferences getAccountPreferences(Context context, String account) {
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("hasaccount", true)) {
+            return context.getSharedPreferences(account.toLowerCase(), 0);
+        } else {
+            return context.getSharedPreferences(TEST_ACCOUNT, 0);
         }
     }
 

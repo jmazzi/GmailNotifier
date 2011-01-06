@@ -103,7 +103,7 @@ public class GmailReceiver extends BroadcastReceiver {
             String account = intent.getStringExtra("account");
             String tagLabel = intent.getStringExtra("tagLabel");
             int unreadCount = intent.getIntExtra("count", 0);
-            SharedPreferences prefs = context.getSharedPreferences(account.toLowerCase(), 0);
+            SharedPreferences prefs = PrefsActivity.getAccountPreferences(context, account);
             boolean isPriority = "content://gmail-ls/unread/^iim".equals(intent.getDataString());
             boolean usePriority = prefs.getBoolean("priority", false);
             // If user has uninstalled Gmail update we force priority setting to
@@ -171,11 +171,11 @@ public class GmailReceiver extends BroadcastReceiver {
             if (account == null) {
                 // Should never happen. Could only happen if account loading
                 // failed in MainActivity. I safety mechanism to prevent FC's.
-                account = "test@gmail.com";
+                account = PrefsActivity.TEST_ACCOUNT;
             }
 
             // Load preferences from file, falling back on hard coded defaults
-            SharedPreferences prefs = context.getSharedPreferences(account.toLowerCase(), 0);
+            SharedPreferences prefs = PrefsActivity.getAccountPreferences(context, account);
             PrefsActivity.upgradePreferences(prefs);
 
             int lastUnreadCount = prefs.getInt("unreadcount", 0);
@@ -354,7 +354,7 @@ public class GmailReceiver extends BroadcastReceiver {
             }
         }
 
-        SharedPreferences prefs = context.getSharedPreferences(account.toLowerCase(), 0);
+        SharedPreferences prefs = PrefsActivity.getAccountPreferences(context, account);
         boolean vibrateOnCall = prefs.getBoolean("vibrateoncall", true);
         if (!vibrateOnCall) {
             // Try to detect phone state

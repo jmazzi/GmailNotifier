@@ -11,7 +11,7 @@
 	<string name="vibrationmode">Vibration mode</string>
 	<string name="vibrationmode_summary">How to vibrate when email arrives</string>
 	<string name="vibrateoncall">Vibrate during calls</string>
-	<string name="vibrateoncall_summary">Enable to allow vibration while during phone calls</string>
+	<string name="vibrateoncall_summary">Enable to allow vibration during phone calls</string>
 	<string name="prefs">Configure</string>
 	<string name="test">Test</string>
 	<string name="donate">Donate</string>
